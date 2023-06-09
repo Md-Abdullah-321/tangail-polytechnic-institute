@@ -1,21 +1,46 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+
+import React, { useContext, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { userContext } from '../../app';
+
 
 const SignIn = () => {
+    const {state, dispatch} = useContext(userContext);
+
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+
+    const navigate = useNavigate();
 
     function validateForm() {
         return email.length > 0 && password.length > 0;
     }
     
-    function handleSubmit(event) {
+    const handleSubmit = async(event) => {
         event.preventDefault();
-        const state = {
-            email,
-            password
+        
+        const res = await fetch('/signin', {
+            method: "POST", 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,password
+            })
+        });
+
+
+        const data = await res.json();
+
+        if(data.error){
+            window.alert("Invalid Credentials");
+        }else{
+            dispatch({type:"STUDENT", payload: true});
+            window.alert("SignIn Successfull");
+            navigate('/');
         }
-        console.log(state);
     }
     return (
         <div className="my-32 md:my-0">
@@ -27,7 +52,8 @@ const SignIn = () => {
 			<div className="text-center">
 				<h1 className="font-bold uppercase text-xl">Sign in to your account</h1>
 			</div>
-			<div className="mt-5">
+            <form method="POST">
+            <div className="mt-5">
 				<input 
                 className="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
                 type="email" 
@@ -41,9 +67,11 @@ const SignIn = () => {
                 placeholder="Enter Password*" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}/>
-        </div>
-        {/* Dont Have any Account  */}
-                <p 
+            </div>
+
+
+            {/* Dont Have any Account  */}
+            <p 
                 className="text-sm font-light text-gray-500 mt-5">
                     Don’t have an account yet? 
                 <NavLink to="/signup" 
@@ -59,6 +87,7 @@ const SignIn = () => {
                     Sign In
                     </button>
 				</div>
+            </form>
 			</div>
     </div>
     {/* <!-- COMPONENT CODE --> */}

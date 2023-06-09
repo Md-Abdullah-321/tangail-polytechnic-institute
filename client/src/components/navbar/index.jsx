@@ -1,12 +1,78 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { userContext } from '../../app';
 import '../../index.css';
 
 const Navbar = () => {
+    const {state, dispatch} = useContext(userContext);
+    // console.log(state);
 
+    //Check if user logged in or not:
+    const RenderButton = () => {
+      if(state){
+        return(
+          <NavLink
+          className="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-blue-500 hover:bg-blue-600  text-sm text-white font-bold rounded-xl transition duration-200"
+          to='/logout'>Logout</NavLink>
+        )
+      }else{
+        return(
+          <>
+            <NavLink
+            className="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-gray-50 hover:bg-gray-100 text-sm text-gray-900 font-bold rounded-xl transition duration-200"
+            to='/signin'>Sign In</NavLink>
+            
+            <NavLink
+            className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200"
+           to='/signup'>Sign up</NavLink>
+          </>
+        )
+      }
+    }
+
+    const RenderMobileButton =() =>{
+      if(state){
+          return(
+            <NavLink
+            className="block px-4 py-3 mb-2 leading-loose text-xs text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 rounded-xl"
+            to='/logout'
+            onClick={showAndCloseHamburger}
+            >Logout</NavLink>
+          )
+      }else{
+          return(
+            <>
+              <NavLink
+                className="block px-4 py-3 mb-3 text-xs text-center font-semibold leading-none bg-gray-50 hover:bg-gray-100 rounded-xl"
+                to='/signin'
+                onClick={showAndCloseHamburger}
+                >Sign in</NavLink>
+              <NavLink
+                className="block px-4 py-3 mb-2 leading-loose text-xs text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 rounded-xl"
+                to='/signup'
+                onClick={showAndCloseHamburger}
+                >Sign Up</NavLink>
+            </>
+          )
+      }
+    }
+    //if logged in show profile;
+    const RenderProfile = () =>{
+      console.log(state);
+      if(state){
+        return (
+          <>
+            <div className="md:ml-14 w-10 h-10 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 border cursor-pointer"
+            onClick={routeChange}>
+            <i class="fa-regular fa-user"></i>    
+            </div>
+          </>
+        )
+      }
+    }
     let navigate = useNavigate(); 
     const routeChange = () =>{ 
-      navigate('../userProfile/index');
+      navigate('../userProfile');
     }
 
     // Showing Hamburger 
@@ -34,97 +100,36 @@ const Navbar = () => {
         </div>
 
         {/* Profile Section  */}
-        <div className="md:ml-14 w-10 h-10 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 border cursor-pointer"
-        onClick={routeChange}>
-        <i class="fa-regular fa-user"></i>    
-        </div>
+        <RenderProfile/>
 
         <ul
-          className="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:flex lg:mx-auto  lg:items-center lg:w-auto lg:space-x-6">
+          className="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:flex lg:mx-auto  lg:items-center lg:w-auto lg:space-x-6 bg-slate-50 px-10 py-2 rounded-md">
           <li>
             <NavLink className="navbar_link_component" to='/'
               >Home</NavLink>
           </li>
 
-          <li className="text-gray-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              stroke="currentColor"
-              className="w-4 h-4 current-fill"
-              viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-            </svg>
-          </li>
           <li>
             <NavLink className="navbar_link_component" to='/about'>About Us</NavLink>
           </li>
-          <li className="text-gray-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              stroke="currentColor"
-              className="w-4 h-4 current-fill"
-              viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
-          </li>
+
           <li>
             <NavLink className="navbar_link_component" to='/department'
               >Department </NavLink>
           </li>
-          <li className="text-gray-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              stroke="currentColor"
-              className="w-4 h-4 current-fill"
-              viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-            </svg>
-          </li>
+         
           <li>
             <NavLink className="navbar_link_component" to='/gallery'
               >Gallery</NavLink>
           </li>
-          <li className="text-gray-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              stroke="currentColor"
-              className="w-4 h-4 current-fill"
-              viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-            </svg>
-          </li>
+       
           <li>
             <NavLink className="navbar_link_component" to='/contact'
               >Contact Us</NavLink>
           </li>
         </ul>
-        <NavLink
-          className="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-gray-50 hover:bg-gray-100 text-sm text-gray-900 font-bold rounded-xl transition duration-200"
-          to='/signin'>Sign In</NavLink>
-        <NavLink
-          className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200"
-          to='/signup'>Sign up</NavLink>
+        {/* RenderButton  */}
+        <RenderButton/>
       </nav>
       <div className="navbar-menu relative z-50 hidden" >
         <div className="navbar-backdrop fixed inset-0 bg-gray-800 opacity-25"></div>
@@ -190,16 +195,10 @@ const Navbar = () => {
           </div>
           <div className="mt-auto">
             <div className="pt-6">
-              <NavLink
-                className="block px-4 py-3 mb-3 text-xs text-center font-semibold leading-none bg-gray-50 hover:bg-gray-100 rounded-xl"
-                to='/signin'
-                onClick={showAndCloseHamburger}
-                >Sign in</NavLink>
-              <NavLink
-                className="block px-4 py-3 mb-2 leading-loose text-xs text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 rounded-xl"
-                to='/signup'
-                onClick={showAndCloseHamburger}
-                >Sign Up</NavLink>
+              {/* RenderButton for sideMenu  */}
+
+            <RenderMobileButton/>
+
             </div>
             <p className="my-4 text-xs text-center text-gray-400">
               <span>Copyright © Md Abdullah</span>

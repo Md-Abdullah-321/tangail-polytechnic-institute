@@ -1,9 +1,9 @@
 import React, { useReducer } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 
 const initialState = {
-    username: "",
+    name: "",
     session: "",
     department: "",
     semester: "",
@@ -13,7 +13,6 @@ const initialState = {
     email: "",
     password:""
 };
-
 const reducer = (state, action) => {
     if (action.type === "reset") {
         return initialState;
@@ -25,16 +24,33 @@ const reducer = (state, action) => {
 };
 
 const Signup = () => {
+    const navigate = useNavigate();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { username, session, department, semester, shift, roll, registration, email, password } = state;
+    const { name, session, department, semester, shift, roll, registration, email, password } = state;
 
-    const handleSubmit = e => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
 
         /* fetch api */
-        console.log(state);
+        const res = await fetch('/signup', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            }, 
+            body:JSON.stringify({
+                name, session, department, semester, shift, roll, registration, email, password 
+            })
+        });
+        const data = await res.json();
+        if(data.error){
+            window.alert(data.error);
+        }else{
+            window.alert("SignUp Successfull");
+            //navigate to login Page:
+            navigate('/signin')
+        }
         /* clear state */
-        dispatch({ type: "reset" });
+        // dispatch({ type: "reset" });
     };
 
     const onChange = e => {
@@ -52,13 +68,15 @@ const Signup = () => {
         <div className="text-center">
             <h1 className="font-bold uppercase text-xl">Create an Account</h1>
         </div>
-        <div className="mt-5">
+
+            <form method="POST">
+            <div className="mt-5">
             <input className="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
             type="text" 
             placeholder="Enter Name*" 
             required='true'
-            name='username'
-            value={username}
+            name='name'
+            value={name}
             onChange={onChange}/>
 
             <div className="flex justify-between">
@@ -119,7 +137,7 @@ const Signup = () => {
                         <option value="3rd">3rd Semester</option>
                         <option value="4th">4th Semester</option>
                         <option value="5th">5th Semester</option>
-                        <option value="6th">5th Semester</option>
+                        <option value="6th">6th Semester</option>
                         <option value="7th">7th Semester</option>
                         <option value="8th">8th Semester</option>
                     </select>
@@ -173,7 +191,7 @@ const Signup = () => {
             name="password"
             value={password}
             onChange={onChange}/>
-    </div>
+            </div>
     {/* Dont Have any Account  */}
             <p 
             className="text-sm font-light text-gray-500 mt-5">
@@ -192,6 +210,7 @@ const Signup = () => {
                  Sign Up
                 </button>
             </div>
+            </form>
         </div>
 </div>
 {/* <!-- COMPONENT CODE --> */}

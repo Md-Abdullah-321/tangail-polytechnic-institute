@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const app = express();
 const bodyParser = require('body-parser');
+const AuthenticateStudent = require('../middleware/authentication');
+const bcrypt = require('bcryptjs');
 
 //create application:
 const jsonParser = bodyParser.json();
@@ -17,14 +19,37 @@ const Student = require('../model/user/userSchema');
 
 
 //SignIn Route:
-router.get('/signin', async(req, res) => {
-    try {
-        // Get all student 
-        const allStudent = await Student.find();
-        return res.json(allStudent);
-      } catch (error) {
-        res.json({ message: error });
-      }
+router.post('/signin',jsonParser,async(req, res) => {
+    try{
+        const {email,password} = req.body;
+        const userLogin = await Student.findOne({email: email});
+        
+        if(!email || !password){
+            return res.status(400).json({error: 'Please, fill the data'});
+        }
+        if(userLogin){
+            const isMatch = await bcrypt.compare(password, userLogin.password);
+
+            const token = await userLogin.generateAuthToken();
+
+            res.cookie("jwtoken", token, {
+                expires: new Date(Date.now() + 25892000000),
+                httpOnly: true
+            });
+            if(!isMatch){
+                res.status(400).json({error: 'Invalid Credientials'});
+            }else{
+                res.json({message: 'User SignIn successfully'});
+            }
+        }else{
+            res.status(400).json({error: 'Invalid Credientials.'});
+        }
+        
+
+
+    }catch(err){
+        console.log(err);
+    }
 })
 
 // SignUP Route: 
@@ -35,10 +60,16 @@ router.post('/signup',jsonParser, async(req, res) => {
         return res.json({error: "Please, filled the Registration form"});
     }
     //check if the user already exist or not:
-    const userExist = await Student.findOne({roll: roll});
-    if(userExist){
+    const userRoll = await Student.findOne({roll: roll});
+    const userEmail = await Student.findOne({email: email})
+
+    if(userRoll){
         //if exist return an error:
         return res.status(422).json({error: 'Student Already Exist'});
+    }
+    if(userEmail){
+        //if email is already exist:
+        return res.status(422).json({error:"This email is not available"});
     }
 
     try{
@@ -52,15 +83,16 @@ router.post('/signup',jsonParser, async(req, res) => {
 })
 
 //Profile Route:
-router.get('/userProfile',jsonParser, async(req, res) => {
-    const {roll} = req.body;
-    try {
-        const userProfile = await Student.findOne({roll, roll});
-        return res.json(userProfile);
-      } catch (error) {
-        res.json({ message: error });
-      }
+router.get('/userProfile',AuthenticateStudent, async(req, res) => {
+    res.send(req.rootUser);
 })
+
+//logout Route:
+router.get('/logout',(req,res) => {
+    res.clearCookie('jwtoken', {path: '/'})
+    res.status(200).send("I am from logout");
+});
+
 
 module.exports = router;
 

@@ -43,7 +43,7 @@ const Contact = () => {
 					<div className="flex my-4 w-full">
 						<div className="flex justify-between items-center w-full">
 							<i className="fas fa-map-marker-alt pt-2 pr-2 text-xl" />
-              <p className="w-5/6">B. A. U. Madrasah Deola,Tangail- 1900, Bangladesh.</p>
+              <p className="w-5/6 mt-2">B. A. U. Madrasah Deola,Tangail- 1900, Bangladesh.</p>
             </div>
           </div>
           
